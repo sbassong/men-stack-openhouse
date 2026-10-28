@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
+const path = require("path");
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
@@ -20,6 +21,12 @@ mongoose.connect(process.env.MONGODB_URI);
 mongoose.connection.on('connected', () => {
   console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
 });
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+app.use(express.static(path.join(__dirname, "public")));
+
 
 app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride('_method'));
@@ -49,9 +56,8 @@ app.use(isSignedIn)
 // Any other routes after the middleware isSignedIn
 app.use("/listings", listingsController)
 
-app.listen(port, () => {
-  console.log(`The express app is ready on port ${port}!`);
-});
+
+module.exports = app;
 
 
 // Recommended workflow for setting up an entity's CRUD
